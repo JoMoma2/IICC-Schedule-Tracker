@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Excel Content</title>
+    <link rel="stylesheet" href="display_styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="fileName">Loading...</h1>
+        <div class="filter-options">
+            <label><input type="checkbox" id="priority1" value="1"> Priority 1</label>
+            <label><input type="checkbox" id="priority2" value="2"> Priority 2</label>
+            <label><input type="checkbox" id="priority3" value="3"> Priority 3</label>
+            <label><input type="checkbox" id="priority4" value="4"> Priority 4</label>
+        </div>
+        <table id="excelTable"></table>
+        <div id="sheetButtonsContainer" class="scroll-container"></div>
+    </div>
+    <script src="display_logic.js"></script>
+    <script src="sort_logic.js"></script>
+</body>
+</html>
