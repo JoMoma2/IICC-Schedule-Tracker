@@ -1,40 +1,45 @@
-const applyFilters = (priorityColumnIndex) => {
+// Function to apply filters based on the priority and company/added by checkboxes
+const applyFilters = (priorityColumnIndex, companyOrAddedByColumnIndex) => {
     const table = document.getElementById('excelTable');
-    const rows = Array.from(table.rows).slice(1); // Skip header row
-    const priority1 = document.getElementById('priority1').checked;
-    const priority2 = document.getElementById('priority2').checked;
-    const priority3 = document.getElementById('priority3').checked;
-    const priority4 = document.getElementById('priority4').checked;
-    const priorities = [];
+    const priorities = Array.from(document.querySelectorAll('.filter-options input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+    const onlyShowConti = document.getElementById('onlyConti').checked;
 
-    if (priority1) priorities.push('1');
-    if (priority2) priorities.push('2');
-    if (priority3) priorities.push('3');
-    if (priority4) priorities.push('4');
+    // Iterate through each row and hide/show based on the priority and company/added by filters
+    Array.from(table.rows).slice(1).forEach(row => {
+        const priorityValue = row.cells[priorityColumnIndex]?.textContent || '';
+        const companyOrAddedByValue = row.cells[companyOrAddedByColumnIndex]?.textContent.toLowerCase() || '';
 
-    rows.forEach(row => {
-        const priorityCell = row.cells[priorityColumnIndex];
-        const priorityValue = priorityCell ? priorityCell.textContent : null;
+        const showByPriority = priorities.length === 0 || priorities.includes(priorityValue);
+        const showByCompany = !onlyShowConti || companyOrAddedByValue.includes('conti');
 
-        if (priorities.length === 0 || priorities.includes(priorityValue)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
+        row.style.display = showByPriority && showByCompany ? '' : 'none';
     });
 };
 
+// Add event listeners to each checkbox to trigger filtering when changed
 document.querySelectorAll('.filter-options input').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
+        // Get the header row of the table
         const headerRow = document.getElementById('excelTable').rows[0];
+
+        // Find the index of the column that has the header text "PRIORITY"
         const priorityColumnIndex = Array.from(headerRow.cells).findIndex(cell => cell.textContent === 'PRIORITY');
-        if (priorityColumnIndex !== -1) {
-            applyFilters(priorityColumnIndex);
+
+        // Find the index of the column that has the header text "Company" or "ADDED BY"
+        let companyOrAddedByColumnIndex = Array.from(headerRow.cells).findIndex(cell => cell.textContent === 'Company');
+        let useCompanyColumn = true;
+
+        if (companyOrAddedByColumnIndex === -1) {
+            companyOrAddedByColumnIndex = Array.from(headerRow.cells).findIndex(cell => cell.textContent === 'ADDED BY');
+            useCompanyColumn = false;
+        }
+
+        // Apply filters based on the selected checkboxes
+        if (priorityColumnIndex !== -1 && companyOrAddedByColumnIndex !== -1) {
+            applyFilters(priorityColumnIndex, companyOrAddedByColumnIndex);
         }
     });
 });
 
-// Set all checkboxes to checked by default
-document.querySelectorAll('.filter-options input').forEach(checkbox => {
-    checkbox.checked = true;
-});
+// Initial fetch for the first sheet
+fetchData(file);
